@@ -1,0 +1,60 @@
+---
+title : <t> Project 2 </t>
+subtitle : <st> Which factors influence a student's grade? </st>
+author: <at> 510603294  000000000  000000000<br>000000000  000000000 </at>
+date: <dt> University of Sydney | `r Sys.Date()` </dt>
+output: 
+  slidy_presentation:
+    code_folding: hide
+    footer: "Produced by.   Andrea, Jia, Sacha, Rachi & Isaac"
+    
+    css: styles.css
+---
+## Executive Summary
+<y class="longer_line">
+The purpose of this report is to look into the elements that influence students' grade. <br>
++ What we learned (50 words)
+ 
+
+## Initial Data Analysis (IDA)
+<y class="longer_line">
+Initial data analysis (200 words)
+ 
+```{r, message=FALSE}
+library(googlesheets4)
+library(ggplot2)
+surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064"
+surv_data <- read_sheet(surv_url)
+```
+<font size="4" color="navy">
+
+[ Data Set Size (rows) = `r length(surv_data$Timestamp)` ] , [ Number of Variables (columns) = `r length(surv_data) - 1` ] <br>
+</font>
+<font size="3" color="navy">
+
+| Gender | ATAR | Study/week | Work/week | High School | Self-assessed Academic Performance (current) | Physical Activity/week | Tutoring/week (during high school) | Caffeine Consumption/week| 
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| (qualitative) | (quantItative) | (quantItative) | (quantItative) | (qualitative) | (qualitative) | (quantitative) |(quantitative) | (quantitative) |
+|Male = `r length(surv_data$Gender[surv_data$Gender == "Male"])`|Mean = `r round(mean(surv_data$ATAR), 2)` | Mean = `r round(mean(surv_data$Study), 2)` hr.|Mean = `r round(mean(surv_data$Work))` hr.| Public = `r length(surv_data$High_School[surv_data$High_School == "Public"])`| 1~4 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1, 2, 3, 4)])` | Mean = `r round(mean(surv_data$Physical_Activity), 2)` hr.| Mean = `r round(mean(surv_data$Tutoring), 2)` hr.| Mean = `r round(mean(surv_data$Caffeine_Consumption), 2)` cups|
+|Female = `r length(surv_data$Gender[surv_data$Gender == "Female"])`| Median = `r median(surv_data$ATAR)`| Median: =  `r median(surv_data$Study)`  hr.|Median = `r median(surv_data$Work)` hr.| Private = `r length(surv_data$High_School[surv_data$High_School == "Private"])` | 5~7 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5, 6, 7)])` | Median = `r round(median(surv_data$Physical_Activity), 2)` hr.| Median = `r round(median(surv_data$Tutoring), 2)` hr.| Median = `r round(median(surv_data$Caffeine_Consumption), 2)` cups|
+| Not Replied = `r length(surv_data$Gender[surv_data$Gender == "Choose not to specify."])`|||| Selective = `r length(surv_data$High_School[surv_data$High_School == "Selective"])` | 8~10 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8, 9, 10)])` |
+||||||Mean = `r round(mean(surv_data$Academic_Performance), 2)`|
+
+</font>
+
+
+## Research Question(s)
+
+<br>
+
+## Articles
+
+<br>
+
+## References
+Use APA
+
+<br>
+
+## Acknowledgments
+When did you team meet (date and time), and what did each team member contribute?
