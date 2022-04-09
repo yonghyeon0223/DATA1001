@@ -1,0 +1,25 @@
+body{
+  background-image : url("slide_background.png");
+  background-repeat : no-repeat;
+  background-size: cover;
+}
+
+h1{
+  font-size: 5px;
+}
+
+t{
+  position: absolute;
+  top : 30%;
+  left : 55%;
+}
+st{
+  position: absolute;
+  top : 36%;
+  left: 40%;
+  font-size: 75%;
+}
+
+.pad{
+  color: red;
+}

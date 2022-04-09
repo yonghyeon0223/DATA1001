@@ -1,0 +1,45 @@
+---
+title : <t> Project 2 </t>
+subtitle : <st>"Which factors influence a student's grade?" </st>
+author: "510603294 <br> SID2 <br> SID3 <br> SI4 <br> SID5"
+date: "University of Sydney | `r Sys.Date()`"
+output: 
+  slidy_presentation:
+    footer: "Produced by.   Andrea, Jia, Sacha, Rachi & Isaac"
+    code_folding: hide
+    css: styles.css
+---
+## Executive Summary
+The purpose of this report is to look into the elements that influence students' grade. <br>
+```{r, message=FALSE}
+library(googlesheets4)
+surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064"
+surv_data <- read_sheet(surv_url)
+```
+
+
+## Full Report
+
+## Initial Data Analysis (IDA)
+
+```{r, eval = F}
+# Read in your survey data
+survey = read.csv(#you will need to put your file path here!)
+```
+
+
+## Research Question(s)
+
+<br>
+
+## Articles
+
+<br>
+
+## References
+Use APA
+
+<br>
+
+## Acknowledgments
+When did you team meet (date and time), and what did each team member contribute?
