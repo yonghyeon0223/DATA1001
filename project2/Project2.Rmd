@@ -1,15 +1,34 @@
 ---
-title : <t> Project 2 </t>
-subtitle : <st> Which factors influence a student's grade? </st>
-author: <at> 510603294  000000000  000000000<br>000000000  000000000 </at>
-date: <dt> University of Sydney | `r Sys.Date()` </dt>
+title : Project 2
+subtitle : Which factors influence a student's grade?
+author: <AT>510603294,  520438936,  510513719,  520450156,  rachi </AT>
+date:  University of Sydney | `r Sys.Date()`
 output: 
-  slidy_presentation:
+  html_document:
     code_folding: hide
     footer: "Produced by.   Andrea, Jia, Sacha, Rachi & Isaac"
-    
-    css: styles.css
 ---
+```{css newstyles, echo=FALSE}
+h3{
+margin-top : 16px;
+}
+h1, h2 { /* add border to h1 and h2 */
+  border-bottom: solid 1px #666;
+  margin-top : 36px;
+}
+body { /* Make main text colour black */
+  color: black;
+  background-image : url("bg-2.jpeg");
+  background-repeat : no-repeat;
+  background-size: cover;
+}
+a { /* Link colours */
+  color: blue;
+}
+AT{
+ font-size: 90%;
+}
+```
 ## Executive Summary
 <y class="longer_line">
 The purpose of this report is to look into the elements that influence students' grade. <br>
@@ -17,35 +36,83 @@ The purpose of this report is to look into the elements that influence students'
  
 
 ## Initial Data Analysis (IDA)
-<y class="longer_line">
-Initial data analysis (200 words)
+- __source:__ Acquired from survey responses using volunteer selection <br>
+- __sample:__ Consisting primarily of USYD students. <br>
+- __variables__ 4 Qualitative (2 ordinal, 2 nominal), 6 Quantitative (All Discrete) <br>
+- __limitation__: Data is based on self report, meaning that there are likely inaccuracies in quantifying hours of study, sleep etc. The assumption is made that the quantity reported by respondents is approximately accurate. It is also assumed that for questions with a more ‘objective’ type of answer, such as ATAR or type of school, the responses are honest and accurate. <br>
+__Data Wrangling__: For questions that required a quantitative response (such as number of hours or cups), any response containing a number and a word was cleaned to remove the word and record the number only. Data from respondents who gave consistently facetious responses was removed, as well as one response that did not provide their ATAR.
+
  
 ```{r, message=FALSE}
 library(googlesheets4)
 library(ggplot2)
 surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064"
 surv_data <- read_sheet(surv_url)
+rows <- dim(surv_data)[1]
+columns <- dim(surv_data)[2] - 1
+v1 <- "(Qualitative)"
+v2 <- "(Quantitative)"
+var_ls <- c("Gender", "ATAR", "Study/week", "Sleep/day", "Work/week", "High School", "Academic Performance (self-rated)", "Physical Activity/week", "Tutoring/week (high school)", "Caffeine Consumption/week")
+gender_M <- paste("Male =", length(surv_data[[2]][surv_data$Gender == "Male"]))
+gender_F <- paste("Female =", length(surv_data$Gender[surv_data$Gender == "Female"]))
+gender_N <- paste("Not Replied =", length(surv_data$Gender[surv_data$Gender == "Choose not to specify."]))
+ATAR_mean <- paste("Mean =", round(mean(surv_data$ATAR), 2))
+ATAR_median <- paste("Median =", median(surv_data$ATAR))
 ```
-<font size="4" color="navy">
+Size of Data (# of reponses) = `r rows` <br>
+<font size="1" color="navy">
 
-[ Data Set Size (rows) = `r length(surv_data$Timestamp)` ] , [ Number of Variables (columns) = `r length(surv_data) - 1` ] <br>
-</font>
-<font size="3" color="navy">
-
-| Gender | ATAR | Study/week | Work/week | High School | Self-assessed Academic Performance (current) | Physical Activity/week | Tutoring/week (during high school) | Caffeine Consumption/week| 
-|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-| (qualitative) | (quantItative) | (quantItative) | (quantItative) | (qualitative) | (qualitative) | (quantitative) |(quantitative) | (quantitative) |
-|Male = `r length(surv_data$Gender[surv_data$Gender == "Male"])`|Mean = `r round(mean(surv_data$ATAR), 2)` | Mean = `r round(mean(surv_data$Study), 2)` hr.|Mean = `r round(mean(surv_data$Work))` hr.| Public = `r length(surv_data$High_School[surv_data$High_School == "Public"])`| 1~4 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1, 2, 3, 4)])` | Mean = `r round(mean(surv_data$Physical_Activity), 2)` hr.| Mean = `r round(mean(surv_data$Tutoring), 2)` hr.| Mean = `r round(mean(surv_data$Caffeine_Consumption), 2)` cups|
-|Female = `r length(surv_data$Gender[surv_data$Gender == "Female"])`| Median = `r median(surv_data$ATAR)`| Median: =  `r median(surv_data$Study)`  hr.|Median = `r median(surv_data$Work)` hr.| Private = `r length(surv_data$High_School[surv_data$High_School == "Private"])` | 5~7 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5, 6, 7)])` | Median = `r round(median(surv_data$Physical_Activity), 2)` hr.| Median = `r round(median(surv_data$Tutoring), 2)` hr.| Median = `r round(median(surv_data$Caffeine_Consumption), 2)` cups|
-| Not Replied = `r length(surv_data$Gender[surv_data$Gender == "Choose not to specify."])`|||| Selective = `r length(surv_data$High_School[surv_data$High_School == "Selective"])` | 8~10 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8, 9, 10)])` |
-||||||Mean = `r round(mean(surv_data$Academic_Performance), 2)`|
+|`r var_ls[1]`|`r var_ls[2]`|`r var_ls[3]`|`r var_ls[4]`|`r var_ls[5]`|`r var_ls[6]`|`r var_ls[7]`|`r var_ls[8]`|`r var_ls[9]`|`r var_ls[10]`|
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| `r v1` | `r v2` | `r v2` | `r v1` |`r v2` | `r v1` | `r v1` | `r v2` |`r v2` |`r v2`|
+|`r gender_M`|`r ATAR_mean`| Mean = `r round(mean(surv_data$Study), 2)` hr.| 4~6 hr. = `r length(surv_data$Sleep[surv_data$Sleep == "4 to 6 hours"])` | Mean = `r round(mean(surv_data$Work))` hr.| Public = `r length(surv_data$High_School[surv_data$High_School == "Public"])`| 1~4 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1, 2, 3, 4)])` | Mean = `r round(mean(surv_data$Physical_Activity), 2)` hr.| Mean = `r round(mean(surv_data$Tutoring), 2)` hr.| Mean = `r round(mean(surv_data$Caffeine_Consumption), 2)` cups|
+|`r gender_F`|`r ATAR_median`| Median: =  `r median(surv_data$Study)` hr.| 6~8 hr. = `r length(surv_data$Sleep[surv_data$Sleep == "6 to 8 hours"])` | Median = `r median(surv_data$Work)` hr.| Private = `r length(surv_data$High_School[surv_data$High_School == "Private"])` | 5~7 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5, 6, 7)])` | Median = `r round(median(surv_data$Physical_Activity), 2)` hr.| Median = `r round(median(surv_data$Tutoring), 2)` hr.| Median = `r round(median(surv_data$Caffeine_Consumption), 2)` cups|
+|`r gender_N`|||8~10 hr. = `r length(surv_data$Sleep[surv_data$Sleep == "8 to 10 hours"])` || Selective = `r length(surv_data$High_School[surv_data$High_School == "Selective"])` | 8~10 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8, 9, 10)])` |
+|||||||Mean = `r round(mean(surv_data$Academic_Performance), 2)`|
 
 </font>
 
 
 ## Research Question(s)
 
-<br>
+### Q, How does study-sleep balance affect academic performance?
+```{r, message=FALSE}
+
+Self_Rating <- surv_data$Academic_Performance
+
+ggplot(surv_data, aes(x=Study, y=ATAR)) +
+  geom_point(aes(color=Self_Rating)) + geom_smooth() +
+  xlab("Average studying hours / week") + ylab("ATAR") +
+  scale_color_gradientn(colours = rainbow(5))
+    
+
+ggplot(surv_data, aes(x=Study, y=Academic_Performance)) +
+  geom_point() + geom_smooth() +
+  xlab("Average studying hours") + ylab("Self-rated Academic Performance this Sem.")
+
+ggplot(surv_data, aes(x=ATAR, y=Academic_Performance))+
+  geom_point() + geom_smooth()
+```
+
+- scatter plot studying vs atar col = sleep
+- comparative box pot for studying hours vs 
+
+school_type <- c("Public", "Private", "Selective")
+
+ggplot(surv_data, aes(x=Study, y=ATAR)) + geom_point() + geom_smooth()
+
+"- find out Pearson's correlation coefficient"
+"- draw regression line"
+
+
+Q2. caffeine, working hours -> study or sleep balance
+
+
+Q3. tutoring, type of schohol -> atar
+
+comparative box plot school vs tutoring
+tutoring -> atar scatterplot 
+
 
 ## Articles
 

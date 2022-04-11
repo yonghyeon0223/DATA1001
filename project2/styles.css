@@ -7,18 +7,6 @@ t, st, at, dt{
   font-family: Georgia;
 }
 
-t{
-  position: absolute;
-  top : 28%;
-  left : 45%;
-}
-st{
-  position: absolute;
-  top : 36%;
-  left: 30%;
-  font-size: 75%;
-}
-
 y{
   background-color: gold;
   resize : both;
