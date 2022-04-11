@@ -1,0 +1,9 @@
+---
+title: "Week 1 Review"
+author: "Isaac"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+This document will go over materials from week 1.
+- 

@@ -1,4 +1,4 @@
-git add -u
+git add ./project2
 git status
 echo "Provide commit message"
 read commitMsg
