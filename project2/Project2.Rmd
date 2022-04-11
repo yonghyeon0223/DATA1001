@@ -1,12 +1,13 @@
 ---
-title : Project 2
-subtitle : Which factors influence a student's grade?
-author: <AT>510603294,  520438936,  510513719,  520450156,  rachi </AT>
-date:  University of Sydney | `r Sys.Date()`
-output: 
+title: "Project 2"
+author: "<AT>510603294,  520438936,  510513719,  520450156,  rachi </AT>"
+date: "University of Sydney | `r Sys.Date()`"
+output:
   html_document:
     code_folding: hide
-    footer: "Produced by.   Andrea, Jia, Sacha, Rachi & Isaac"
+    footer: Produced by.   Andrea, Jia, Sacha, Rachi & Isaac
+  pdf_document: default
+subtitle: Which factors influence a student's grade?
 ---
 ```{css newstyles, echo=FALSE}
 h3{
@@ -18,7 +19,7 @@ h1, h2 { /* add border to h1 and h2 */
 }
 body { /* Make main text colour black */
   color: black;
-  background-image : url("bg-2.jpeg");
+  background-image : url("data:image/jpeg;base64,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");
   background-repeat : no-repeat;
   background-size: cover;
 }
@@ -50,6 +51,7 @@ surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYU
 surv_data <- read_sheet(surv_url)
 rows <- dim(surv_data)[1]
 columns <- dim(surv_data)[2] - 1
+diag_size <- c(5,3)
 v1 <- "(Qualitative)"
 v2 <- "(Quantitative)"
 var_ls <- c("Gender", "ATAR", "Study/week", "Sleep/day", "Work/week", "High School", "Academic Performance (self-rated)", "Physical Activity/week", "Tutoring/week (high school)", "Caffeine Consumption/week")
@@ -73,45 +75,67 @@ Size of Data (# of reponses) = `r rows` <br>
 </font>
 
 
-## Research Question(s)
+## Research Questions
 
-### Q, How does study-sleep balance affect academic performance?
-```{r, message=FALSE}
+### Q, What is the effect of Study time on student's academic performance
+```{r, message=FALSE, fig.dim = diag_size}
 
-Self_Rating <- surv_data$Academic_Performance
+SR_AP <- surv_data$Academic_Performance
 
 ggplot(surv_data, aes(x=Study, y=ATAR)) +
-  geom_point(aes(color=Self_Rating)) + geom_smooth() +
-  xlab("Average studying hours / week") + ylab("ATAR") +
-  scale_color_gradientn(colours = rainbow(5))
-    
-
+  geom_point(aes(color=SR_AP ), size=3) + geom_smooth() +
+  xlab("Average studying hours per week") + ylab("ATAR (High School)") +
+   scale_colour_gradient(low = "yellow", high = "red") +
+  labs(caption="SR_AP = Self-Rated Academic Performance")
+```
+```{r, message=FALSE, fig.dim = diag_size}
 ggplot(surv_data, aes(x=Study, y=Academic_Performance)) +
-  geom_point() + geom_smooth() +
-  xlab("Average studying hours") + ylab("Self-rated Academic Performance this Sem.")
+  geom_point(aes(color=ATAR), size=3) + geom_smooth() +
+  xlab("Average studying hours per week") + ylab("Self-rated Academic Performance (Uni)") +
+  scale_colour_gradient(low = "yellow", high = "green")
 
-ggplot(surv_data, aes(x=ATAR, y=Academic_Performance))+
-  geom_point() + geom_smooth()
+```
+<font size="3"> <br> 
+Can anyone describe the relationship of above two graphs using pearson's correlation value? or in a context of atar being standardised test and academic performance being self-rated. (on google doc) <br>
+</font>
+
+### Q. What is the effect of Environment on student's grade
+```{r, message=FALSE, fig.dim = diag_size}
+ggplot(surv_data, aes(x=High_School, y=ATAR, color=Gender)) +
+  geom_boxplot() +
+  xlab("Type of High School") + ylab("ATAR")
+```
+```{r, message=FALSE, fig.dim = diag_size}
+ggplot(surv_data, aes(x=Tutoring, y=ATAR)) +
+  geom_point() + geom_smooth() +
+  xlab("Tutoring") + ylab("ATAR")
+```
+<br>
+
+### Q. What is the effect of Daily lifetyle on student's grade
+
+```{r, message=FALSE, fig.dim = diag_size}
+c <- surv_data$Caffeine_Consumption
+drink_or_not <- c()
+for (i in 1:length(c)){
+  if (c[i] > 0 ){
+    drink_or_not <- append(drink_or_not, "Caffeinated Drink O")
+  }
+  else{
+    drink_or_not <- append(drink_or_not, "Caffeinated Drink X")
+  }
+}
+names(surv_data$Caffeine_Consumption) <- drink_or_not
+
+ggplot(surv_data, aes(x=names(Caffeine_Consumption), y=ATAR)) +
+  geom_boxplot(aes(color=Sleep)) +
+  labs(x="Caffeine Consumption (y/n) ", y="ATAR score")
+
+ggplot(surv_data, aes(x=Work, y=Academic_Performance)) +
+  geom_point() +geom_smooth() +
+  labs(x="Weekly working hours", y="Uni Academic Performance")
 ```
 
-- scatter plot studying vs atar col = sleep
-- comparative box pot for studying hours vs 
-
-school_type <- c("Public", "Private", "Selective")
-
-ggplot(surv_data, aes(x=Study, y=ATAR)) + geom_point() + geom_smooth()
-
-"- find out Pearson's correlation coefficient"
-"- draw regression line"
-
-
-Q2. caffeine, working hours -> study or sleep balance
-
-
-Q3. tutoring, type of schohol -> atar
-
-comparative box plot school vs tutoring
-tutoring -> atar scatterplot 
 
 
 ## Articles
