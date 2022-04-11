@@ -498,28 +498,61 @@ that there are likely inaccuracies in quantifying hours of study, sleep
 etc. The assumption is made that the quantity reported by respondents is
 approximately accurate. It is also assumed that for questions with a
 more ‘objective’ type of answer, such as ATAR or type of school, the
-responses are honest and accurate. <br> <strong>Data Wrangling</strong>:
-For questions that required a quantitative response (such as number of
-hours or cups), any response containing a number and a word was cleaned
-to remove the word and record the number only. Data from respondents who
-gave consistently facetious responses was removed, as well as one
-response that did not provide their ATAR.</li>
+responses are honest and accurate. <br></li>
+<li><strong>Data Wrangling</strong>: For questions that required a
+quantitative response (such as number of hours or cups), any response
+containing a number and a word was cleaned to remove the word and record
+the number only. Data from respondents who gave consistently facetious
+responses was removed, as well as one response that did not provide
+their ATAR.</li>
 </ul>
 <pre class="r"><code>library(googlesheets4)
 library(ggplot2)
+
 surv_url &lt;- &quot;https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064&quot;
 surv_data &lt;- read_sheet(surv_url)
 rows &lt;- dim(surv_data)[1]
 columns &lt;- dim(surv_data)[2] - 1
 diag_size &lt;- c(5,3)
+
 v1 &lt;- &quot;(Qualitative)&quot;
 v2 &lt;- &quot;(Quantitative)&quot;
 var_ls &lt;- c(&quot;Gender&quot;, &quot;ATAR&quot;, &quot;Study/week&quot;, &quot;Sleep/day&quot;, &quot;Work/week&quot;, &quot;High School&quot;, &quot;Academic Performance (self-rated)&quot;, &quot;Physical Activity/week&quot;, &quot;Tutoring/week (high school)&quot;, &quot;Caffeine Consumption/week&quot;)
+
 gender_M &lt;- paste(&quot;Male =&quot;, length(surv_data[[2]][surv_data$Gender == &quot;Male&quot;]))
 gender_F &lt;- paste(&quot;Female =&quot;, length(surv_data$Gender[surv_data$Gender == &quot;Female&quot;]))
 gender_N &lt;- paste(&quot;Not Replied =&quot;, length(surv_data$Gender[surv_data$Gender == &quot;Choose not to specify.&quot;]))
+
 ATAR_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$ATAR), 2))
-ATAR_median &lt;- paste(&quot;Median =&quot;, median(surv_data$ATAR))</code></pre>
+ATAR_median &lt;- paste(&quot;Median =&quot;, median(surv_data$ATAR))
+
+Study_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Study), 2), &quot;hr.&quot;)
+Study_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Study), &quot;hr.&quot;)
+
+sleep_1 &lt;- paste(&quot;4~6 hr. =&quot;, length(surv_data$Sleep[surv_data$Sleep == &quot;4 to 6 hours&quot;]))
+sleep_2 &lt;- paste(&quot;6~8 hr. =&quot;, length(surv_data$Sleep[surv_data$Sleep == &quot;6 to 8 hours&quot;]))
+sleep_3 &lt;- paste(&quot;8~10 hr. =&quot;, length(surv_data$Sleep[surv_data$Sleep == &quot;8 to 10 hours&quot;]))
+
+Work_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Work), 2), &quot;hr.&quot;)
+Work_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Work), &quot;hr.&quot;)
+
+Pub_school &lt;- paste(&quot;Public=&quot;, length(surv_data$High_School[surv_data$High_School == &quot;Public&quot;]))
+Selec_school &lt;- paste(&quot;Selective=&quot;, length(surv_data$High_School[surv_data$High_School == &quot;Selective&quot;]))
+Priv_school &lt;- paste(&quot;Private=&quot;, length(surv_data$High_School[surv_data$High_School == &quot;Private&quot;]))
+
+Academ_Rat_1 &lt;- paste(&quot;1~4=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1:4)]))
+Academ_Rat_2 &lt;- paste(&quot;1~4=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
+Academ_Rat_3 &lt;- paste(&quot;1~4=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
+Academ_Rat_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Academic_Performance), 2))
+
+Phys_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Physical_Activity), 2), &quot;hr.&quot;)
+Phys_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Physical_Activity), &quot;hr.&quot;)
+
+Tut_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Tutoring), 2), &quot;hr.&quot;)
+Tut_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Tutoring), &quot;hr.&quot;)
+
+Caf_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Caffeine_Consumption), 2), &quot;cups&quot;)
+Caf_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Caffeine_Consumption), &quot;cups&quot;)</code></pre>
 <p>Size of Data (# of reponses) = 30 <br>
 <font size="1" color="navy"></p>
 <table style="width:100%;">
@@ -567,9 +600,9 @@ ATAR_median &lt;- paste(&quot;Median =&quot;, median(surv_data$ATAR))</code></pr
 <td align="center">Mean = 94.29</td>
 <td align="center">Mean = 20.08 hr.</td>
 <td align="center">4~6 hr. = 3</td>
-<td align="center">Mean = 8 hr.</td>
-<td align="center">Public = 10</td>
-<td align="center">1~4 = 6</td>
+<td align="center">Mean = 7.8 hr.</td>
+<td align="center">Public= 10</td>
+<td align="center">1~4= 6</td>
 <td align="center">Mean = 5.47 hr.</td>
 <td align="center">Mean = 4.3 hr.</td>
 <td align="center">Mean = 3.03 cups</td>
@@ -577,11 +610,11 @@ ATAR_median &lt;- paste(&quot;Median =&quot;, median(surv_data$ATAR))</code></pr
 <tr class="odd">
 <td align="center">Female = 12</td>
 <td align="center">Median = 96.5</td>
-<td align="center">Median: = 18 hr.</td>
+<td align="center">Median = 18 hr.</td>
 <td align="center">6~8 hr. = 20</td>
 <td align="center">Median = 8.5 hr.</td>
-<td align="center">Private = 10</td>
-<td align="center">5~7 = 12</td>
+<td align="center">Private= 10</td>
+<td align="center">1~4= 12</td>
 <td align="center">Median = 5 hr.</td>
 <td align="center">Median = 4 hr.</td>
 <td align="center">Median = 2 cups</td>
@@ -592,8 +625,8 @@ ATAR_median &lt;- paste(&quot;Median =&quot;, median(surv_data$ATAR))</code></pr
 <td align="center"></td>
 <td align="center">8~10 hr. = 7</td>
 <td align="center"></td>
-<td align="center">Selective = 10</td>
-<td align="center">8~10 = 12</td>
+<td align="center">Selective= 10</td>
+<td align="center">1~4= 12</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>

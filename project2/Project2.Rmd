@@ -41,25 +41,57 @@ The purpose of this report is to look into the elements that influence students'
 - __sample:__ Consisting primarily of USYD students. <br>
 - __variables__ 4 Qualitative (2 ordinal, 2 nominal), 6 Quantitative (All Discrete) <br>
 - __limitation__: Data is based on self report, meaning that there are likely inaccuracies in quantifying hours of study, sleep etc. The assumption is made that the quantity reported by respondents is approximately accurate. It is also assumed that for questions with a more ‘objective’ type of answer, such as ATAR or type of school, the responses are honest and accurate. <br>
-__Data Wrangling__: For questions that required a quantitative response (such as number of hours or cups), any response containing a number and a word was cleaned to remove the word and record the number only. Data from respondents who gave consistently facetious responses was removed, as well as one response that did not provide their ATAR.
+- __Data Wrangling__: For questions that required a quantitative response (such as number of hours or cups), any response containing a number and a word was cleaned to remove the word and record the number only. Data from respondents who gave consistently facetious responses was removed, as well as one response that did not provide their ATAR.
 
  
 ```{r, message=FALSE}
 library(googlesheets4)
 library(ggplot2)
+
 surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064"
 surv_data <- read_sheet(surv_url)
 rows <- dim(surv_data)[1]
 columns <- dim(surv_data)[2] - 1
 diag_size <- c(5,3)
+
 v1 <- "(Qualitative)"
 v2 <- "(Quantitative)"
 var_ls <- c("Gender", "ATAR", "Study/week", "Sleep/day", "Work/week", "High School", "Academic Performance (self-rated)", "Physical Activity/week", "Tutoring/week (high school)", "Caffeine Consumption/week")
+
 gender_M <- paste("Male =", length(surv_data[[2]][surv_data$Gender == "Male"]))
 gender_F <- paste("Female =", length(surv_data$Gender[surv_data$Gender == "Female"]))
 gender_N <- paste("Not Replied =", length(surv_data$Gender[surv_data$Gender == "Choose not to specify."]))
+
 ATAR_mean <- paste("Mean =", round(mean(surv_data$ATAR), 2))
 ATAR_median <- paste("Median =", median(surv_data$ATAR))
+
+Study_mean <- paste("Mean =", round(mean(surv_data$Study), 2), "hr.")
+Study_median <- paste("Median =", median(surv_data$Study), "hr.")
+
+sleep_1 <- paste("4~6 hr. =", length(surv_data$Sleep[surv_data$Sleep == "4 to 6 hours"]))
+sleep_2 <- paste("6~8 hr. =", length(surv_data$Sleep[surv_data$Sleep == "6 to 8 hours"]))
+sleep_3 <- paste("8~10 hr. =", length(surv_data$Sleep[surv_data$Sleep == "8 to 10 hours"]))
+
+Work_mean <- paste("Mean =", round(mean(surv_data$Work), 2), "hr.")
+Work_median <- paste("Median =", median(surv_data$Work), "hr.")
+
+Pub_school <- paste("Public=", length(surv_data$High_School[surv_data$High_School == "Public"]))
+Selec_school <- paste("Selective=", length(surv_data$High_School[surv_data$High_School == "Selective"]))
+Priv_school <- paste("Private=", length(surv_data$High_School[surv_data$High_School == "Private"]))
+
+Academ_Rat_1 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1:4)]))
+Academ_Rat_2 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
+Academ_Rat_3 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
+Academ_Rat_mean <- paste("Mean =", round(mean(surv_data$Academic_Performance), 2))
+
+Phys_mean <- paste("Mean =", round(mean(surv_data$Physical_Activity), 2), "hr.")
+Phys_median <- paste("Median =", median(surv_data$Physical_Activity), "hr.")
+
+Tut_mean <- paste("Mean =", round(mean(surv_data$Tutoring), 2), "hr.")
+Tut_median <- paste("Median =", median(surv_data$Tutoring), "hr.")
+
+Caf_mean <- paste("Mean =", round(mean(surv_data$Caffeine_Consumption), 2), "cups")
+Caf_median <- paste("Median =", median(surv_data$Caffeine_Consumption), "cups")
 ```
 Size of Data (# of reponses) = `r rows` <br>
 <font size="1" color="navy">
@@ -67,10 +99,10 @@ Size of Data (# of reponses) = `r rows` <br>
 |`r var_ls[1]`|`r var_ls[2]`|`r var_ls[3]`|`r var_ls[4]`|`r var_ls[5]`|`r var_ls[6]`|`r var_ls[7]`|`r var_ls[8]`|`r var_ls[9]`|`r var_ls[10]`|
 |:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
 | `r v1` | `r v2` | `r v2` | `r v1` |`r v2` | `r v1` | `r v1` | `r v2` |`r v2` |`r v2`|
-|`r gender_M`|`r ATAR_mean`| Mean = `r round(mean(surv_data$Study), 2)` hr.| 4~6 hr. = `r length(surv_data$Sleep[surv_data$Sleep == "4 to 6 hours"])` | Mean = `r round(mean(surv_data$Work))` hr.| Public = `r length(surv_data$High_School[surv_data$High_School == "Public"])`| 1~4 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1, 2, 3, 4)])` | Mean = `r round(mean(surv_data$Physical_Activity), 2)` hr.| Mean = `r round(mean(surv_data$Tutoring), 2)` hr.| Mean = `r round(mean(surv_data$Caffeine_Consumption), 2)` cups|
-|`r gender_F`|`r ATAR_median`| Median: =  `r median(surv_data$Study)` hr.| 6~8 hr. = `r length(surv_data$Sleep[surv_data$Sleep == "6 to 8 hours"])` | Median = `r median(surv_data$Work)` hr.| Private = `r length(surv_data$High_School[surv_data$High_School == "Private"])` | 5~7 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5, 6, 7)])` | Median = `r round(median(surv_data$Physical_Activity), 2)` hr.| Median = `r round(median(surv_data$Tutoring), 2)` hr.| Median = `r round(median(surv_data$Caffeine_Consumption), 2)` cups|
-|`r gender_N`|||8~10 hr. = `r length(surv_data$Sleep[surv_data$Sleep == "8 to 10 hours"])` || Selective = `r length(surv_data$High_School[surv_data$High_School == "Selective"])` | 8~10 = `r length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8, 9, 10)])` |
-|||||||Mean = `r round(mean(surv_data$Academic_Performance), 2)`|
+|`r gender_M`|`r ATAR_mean`|`r Study_mean`|`r sleep_1` |`r Work_mean`|`r Pub_school` |`r Academ_Rat_1` | `r Phys_mean`|`r Tut_mean`|`r Caf_mean`|
+|`r gender_F`|`r ATAR_median`|`r Study_median`| `r sleep_2` |`r Work_median`|`r Priv_school`| `r Academ_Rat_2`|`r Phys_median` |`r Tut_median`|`r Caf_median`|
+|`r gender_N`| | |`r sleep_3` ||`r Selec_school`|`r Academ_Rat_3` |
+||||||| `r Academ_Rat_mean` |
 
 </font>
 
