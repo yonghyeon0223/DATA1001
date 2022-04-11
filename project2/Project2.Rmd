@@ -80,8 +80,8 @@ Selec_school <- paste("Selective=", length(surv_data$High_School[surv_data$High_
 Priv_school <- paste("Private=", length(surv_data$High_School[surv_data$High_School == "Private"]))
 
 Academ_Rat_1 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1:4)]))
-Academ_Rat_2 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
-Academ_Rat_3 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
+Academ_Rat_2 <- paste("5~7=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
+Academ_Rat_3 <- paste("8~10=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
 Academ_Rat_mean <- paste("Mean =", round(mean(surv_data$Academic_Performance), 2))
 
 Phys_mean <- paste("Mean =", round(mean(surv_data$Physical_Activity), 2), "hr.")

@@ -541,8 +541,8 @@ Selec_school &lt;- paste(&quot;Selective=&quot;, length(surv_data$High_School[su
 Priv_school &lt;- paste(&quot;Private=&quot;, length(surv_data$High_School[surv_data$High_School == &quot;Private&quot;]))
 
 Academ_Rat_1 &lt;- paste(&quot;1~4=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1:4)]))
-Academ_Rat_2 &lt;- paste(&quot;1~4=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
-Academ_Rat_3 &lt;- paste(&quot;1~4=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
+Academ_Rat_2 &lt;- paste(&quot;5~7=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
+Academ_Rat_3 &lt;- paste(&quot;8~10=&quot;, length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
 Academ_Rat_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Academic_Performance), 2))
 
 Phys_mean &lt;- paste(&quot;Mean =&quot;, round(mean(surv_data$Physical_Activity), 2), &quot;hr.&quot;)
@@ -614,7 +614,7 @@ Caf_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Caffeine_Consumpti
 <td align="center">6~8 hr. = 20</td>
 <td align="center">Median = 8.5 hr.</td>
 <td align="center">Private= 10</td>
-<td align="center">1~4= 12</td>
+<td align="center">5~7= 12</td>
 <td align="center">Median = 5 hr.</td>
 <td align="center">Median = 4 hr.</td>
 <td align="center">Median = 2 cups</td>
@@ -626,7 +626,7 @@ Caf_median &lt;- paste(&quot;Median =&quot;, median(surv_data$Caffeine_Consumpti
 <td align="center">8~10 hr. = 7</td>
 <td align="center"></td>
 <td align="center">Selective= 10</td>
-<td align="center">1~4= 12</td>
+<td align="center">8~10= 12</td>
 <td align="center"></td>
 <td align="center"></td>
 <td align="center"></td>
