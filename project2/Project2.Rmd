@@ -32,8 +32,9 @@ AT{
 ```
 ## Executive Summary
 <y class="longer_line">
-The purpose of this report is to look into the elements that influence students' grade. <br>
-+ What we learned (50 words)
+- The purpose of this report is to look into the elements that influence students' grades. <br>
+- The major findings were that students who study for longer periods of time are more likely to have a better ATAR score as well as satisfactory university academic achievement. Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. Finally, it appeared that public high school students had the widest range of ATAR scores and the lowest median score.
+
  
 
 ## Initial Data Analysis (IDA)
@@ -162,6 +163,24 @@ names(surv_data$Caffeine_Consumption) <- drink_or_not
 ggplot(surv_data, aes(x=names(Caffeine_Consumption), y=ATAR)) +
   geom_boxplot(aes(color=Sleep)) +
   labs(x="Caffeine Consumption (y/n) ", y="ATAR score")
+
+divided_caffeine <- c()
+for (i in 1:length(c)){
+  if (c[i] == 0 ){
+    divided_caffeine <- append(divided_caffeine, "0 cups")
+  }
+  else if (c[i] > 0 & c[i] <= 4){
+    divided_caffeine <- append(divided_caffeine, "1~4 cups")
+  }
+  else{
+    divided_caffeine <- append(divided_caffeine, "5+ cups")
+  }
+}
+names(surv_data$Caffeine_Consumption) <- divided_caffeine
+
+ggplot(surv_data, aes(x=names(Caffeine_Consumption), fill=Sleep)) + 
+  geom_bar() +
+  labs(x="caffeine consumption per week ", y="# of people (responses)")
 
 ggplot(surv_data, aes(x=Work, y=Academic_Performance)) +
   geom_point() +geom_smooth() +
