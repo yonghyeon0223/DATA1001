@@ -33,7 +33,7 @@ AT{
 ## Executive Summary
 <y class="longer_line">
 - The purpose of this report is to look into the elements that influence students' grades. <br>
-- The major findings were that students who study for longer periods of time are more likely to have a better ATAR score as well as satisfactory university academic achievement. Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. Finally, it appeared that public high school students had the widest range of ATAR scores and the lowest median score.
+- The major findings were that students who study for longer periods of time are more likely to have a better ATAR score as well as satisfactory university academic achievement. Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. Finally, it appeared that public high school students had the widest spread of ATAR scores and the lowest median score.
 
  
 
@@ -106,6 +106,13 @@ Size of Data (# of reponses) = `r rows` <br>
 ||||||| `r Academ_Rat_mean` |
 
 </font>
+```{r}
+surv_data$Gender <- factor(surv_data$Gender,
+    levels=c("Male", "Female", "Choose noy to reply"))
+library(datasets)
+str(surv_data)
+pairs(surv_data[c(2, 3, 4, 6, 8, 9, 10, 11)])
+```
 
 
 ## Research Questions
@@ -122,10 +129,29 @@ ggplot(surv_data, aes(x=Study, y=ATAR)) +
   labs(caption="SR_AP = Self-Rated Academic Performance")
 ```
 ```{r, message=FALSE, fig.dim = diag_size}
-ggplot(surv_data, aes(x=Study, y=Academic_Performance)) +
+ ggplot(surv_data, aes(x=Study, y=Academic_Performance)) +
   geom_point(aes(color=ATAR), size=3) + geom_smooth() +
   xlab("Average studying hours per week") + ylab("Self-rated Academic Performance (Uni)") +
   scale_colour_gradient(low = "yellow", high = "green")
+
+ac <- surv_data$Academic_Performance
+divided_ac <- c()
+for (i in 1:length(ac)){
+  if (ac[i] > 0 & ac[i] <= 4){
+    divided_ac <- append(divided_ac, "1~4")
+  }
+  else if (ac[i] > 4 & ac[i] <= 7){
+    divided_ac <- append(divided_ac, "5~7")
+  }
+  else{
+    divided_ac <- append(divided_ac, "8~10")
+  }
+}
+names(surv_data$Academic_Performance) <- divided_ac
+SR_AP <- names(surv_data$Academic_Performance)
+ggplot(surv_data, aes(x=ATAR)) +
+  geom_histogram(aes(fill=SR_AP), bins=5) +
+  labs(x="ATAR", y="# of Students", caption="SR_AP = Self-Rated Academic Performance")
 
 ```
 <font size="3"> <br> 
@@ -141,7 +167,7 @@ ggplot(surv_data, aes(x=High_School, y=ATAR, color=Gender)) +
 ```{r, message=FALSE, fig.dim = diag_size}
 ggplot(surv_data, aes(x=Tutoring, y=ATAR)) +
   geom_point() + geom_smooth() +
-  xlab("Tutoring") + ylab("ATAR")
+  xlab("Tutoring") + ylab("ATAR") 
 ```
 <br>
 
