@@ -48,6 +48,7 @@ AT{
 ```{r, message=FALSE}
 library(googlesheets4)
 library(ggplot2)
+library(datasets)
 
 surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064"
 surv_data <- read_sheet(surv_url)
@@ -76,23 +77,23 @@ sleep_3 <- paste("8~10 hr. =", length(surv_data$Sleep[surv_data$Sleep == "8 to 1
 Work_mean <- paste("Mean =", round(mean(surv_data$Work), 2), "hr.")
 Work_median <- paste("Median =", median(surv_data$Work), "hr.")
 
-Pub_school <- paste("Public=", length(surv_data$High_School[surv_data$High_School == "Public"]))
-Selec_school <- paste("Selective=", length(surv_data$High_School[surv_data$High_School == "Selective"]))
-Priv_school <- paste("Private=", length(surv_data$High_School[surv_data$High_School == "Private"]))
+Pub_school <- paste("Public=", length(surv_data$`High School`[surv_data$`High School` == "Public"]))
+Selec_school <- paste("Selective=", length(surv_data$`High School`[surv_data$`High School` == "Selective"]))
+Priv_school <- paste("Private=", length(surv_data$`High School`[surv_data$`High School` == "Private"]))
 
-Academ_Rat_1 <- paste("1~4=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(1:4)]))
-Academ_Rat_2 <- paste("5~7=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(5:7)]))
-Academ_Rat_3 <- paste("8~10=", length(surv_data$Academic_Performance[surv_data$Academic_Performance %in% c(8:10)]))
-Academ_Rat_mean <- paste("Mean =", round(mean(surv_data$Academic_Performance), 2))
+Academ_Rat_1 <- paste("1~4=", length(surv_data$`Academic Performance`[surv_data$`Academic Performance` %in% c(1:4)]))
+Academ_Rat_2 <- paste("5~7=", length(surv_data$`Academic Performance`[surv_data$`Academic Performance` %in% c(5:7)]))
+Academ_Rat_3 <- paste("8~10=", length(surv_data$`Academic Performance`[surv_data$`Academic Performance` %in% c(8:10)]))
+Academ_Rat_mean <- paste("Mean =", round(mean(surv_data$`Academic Performance`), 2))
 
-Phys_mean <- paste("Mean =", round(mean(surv_data$Physical_Activity), 2), "hr.")
-Phys_median <- paste("Median =", median(surv_data$Physical_Activity), "hr.")
+Phys_mean <- paste("Mean =", round(mean(surv_data$`Physical Activity`), 2), "hr.")
+Phys_median <- paste("Median =", median(surv_data$`Physical Activity`), "hr.")
 
 Tut_mean <- paste("Mean =", round(mean(surv_data$Tutoring), 2), "hr.")
 Tut_median <- paste("Median =", median(surv_data$Tutoring), "hr.")
 
-Caf_mean <- paste("Mean =", round(mean(surv_data$Caffeine_Consumption), 2), "cups")
-Caf_median <- paste("Median =", median(surv_data$Caffeine_Consumption), "cups")
+Caf_mean <- paste("Mean =", round(mean(surv_data$`Caffeine Consumption`), 2), "cups")
+Caf_median <- paste("Median =", median(surv_data$`Caffeine Consumption`), "cups")
 ```
 Size of Data (# of reponses) = `r rows` <br>
 <font size="1" color="navy">
@@ -108,10 +109,16 @@ Size of Data (# of reponses) = `r rows` <br>
 </font>
 ```{r}
 surv_data$Gender <- factor(surv_data$Gender,
-    levels=c("Male", "Female", "Choose noy to reply"))
-library(datasets)
+    levels=c("Male", "Female", "Choose not to specify."))
+
+surv_data$Sleep <- factor(surv_data$Sleep,
+    levels=c("4 to 6 hours", "6 to 8 hours", "8 to 10 hours"))
+
+surv_data$`High School` <- factor(surv_data$`High School`,
+    levels=c("Public", "Private", "Selective"))
+
 str(surv_data)
-pairs(surv_data[c(2, 3, 4, 6, 8, 9, 10, 11)])
+pairs(surv_data[c(2:11)])
 ```
 
 
@@ -120,7 +127,7 @@ pairs(surv_data[c(2, 3, 4, 6, 8, 9, 10, 11)])
 ### Q, What is the effect of Study time on student's academic performance
 ```{r, message=FALSE, fig.dim = diag_size}
 
-SR_AP <- surv_data$Academic_Performance
+SR_AP <- surv_data$`Academic Performance`
 
 ggplot(surv_data, aes(x=Study, y=ATAR)) +
   geom_point(aes(color=SR_AP ), size=3) + geom_smooth() +
@@ -129,12 +136,12 @@ ggplot(surv_data, aes(x=Study, y=ATAR)) +
   labs(caption="SR_AP = Self-Rated Academic Performance")
 ```
 ```{r, message=FALSE, fig.dim = diag_size}
- ggplot(surv_data, aes(x=Study, y=Academic_Performance)) +
+ ggplot(surv_data, aes(x=Study, y=`Academic Performance`)) +
   geom_point(aes(color=ATAR), size=3) + geom_smooth() +
   xlab("Average studying hours per week") + ylab("Self-rated Academic Performance (Uni)") +
   scale_colour_gradient(low = "yellow", high = "green")
 
-ac <- surv_data$Academic_Performance
+ac <- surv_data$`Academic Performance`
 divided_ac <- c()
 for (i in 1:length(ac)){
   if (ac[i] > 0 & ac[i] <= 4){
@@ -147,8 +154,8 @@ for (i in 1:length(ac)){
     divided_ac <- append(divided_ac, "8~10")
   }
 }
-names(surv_data$Academic_Performance) <- divided_ac
-SR_AP <- names(surv_data$Academic_Performance)
+names(surv_data$`Academic Performance`) <- divided_ac
+SR_AP <- names(surv_data$`Academic Performance`)
 ggplot(surv_data, aes(x=ATAR)) +
   geom_histogram(aes(fill=SR_AP), bins=5) +
   labs(x="ATAR", y="# of Students", caption="SR_AP = Self-Rated Academic Performance")
@@ -160,7 +167,7 @@ Can anyone describe the relationship of above two graphs using pearson's correla
 
 ### Q. What is the effect of Environment on student's grade
 ```{r, message=FALSE, fig.dim = diag_size}
-ggplot(surv_data, aes(x=High_School, y=ATAR, color=Gender)) +
+ggplot(surv_data, aes(x=`High School`, y=ATAR, color=Gender)) +
   geom_boxplot() +
   xlab("Type of High School") + ylab("ATAR")
 ```
@@ -174,7 +181,7 @@ ggplot(surv_data, aes(x=Tutoring, y=ATAR)) +
 ### Q. What is the effect of Daily lifetyle on student's grade
 
 ```{r, message=FALSE, fig.dim = diag_size}
-c <- surv_data$Caffeine_Consumption
+c <- surv_data$`Caffeine Consumption`
 drink_or_not <- c()
 for (i in 1:length(c)){
   if (c[i] > 0 ){
@@ -184,9 +191,9 @@ for (i in 1:length(c)){
     drink_or_not <- append(drink_or_not, "Caffeinated Drink X")
   }
 }
-names(surv_data$Caffeine_Consumption) <- drink_or_not
+names(surv_data$`Caffeine Consumption`) <- drink_or_not
 
-ggplot(surv_data, aes(x=names(Caffeine_Consumption), y=ATAR)) +
+ggplot(surv_data, aes(x=names(`Caffeine Consumption`), y=ATAR)) +
   geom_boxplot(aes(color=Sleep)) +
   labs(x="Caffeine Consumption (y/n) ", y="ATAR score")
 
@@ -202,15 +209,18 @@ for (i in 1:length(c)){
     divided_caffeine <- append(divided_caffeine, "5+ cups")
   }
 }
-names(surv_data$Caffeine_Consumption) <- divided_caffeine
+names(surv_data$`Caffeine Consumption`) <- divided_caffeine
 
-ggplot(surv_data, aes(x=names(Caffeine_Consumption), fill=Sleep)) + 
+ggplot(surv_data, aes(x=names(`Caffeine Consumption`), fill=Sleep)) + 
   geom_bar() +
   labs(x="caffeine consumption per week ", y="# of people (responses)")
 
-ggplot(surv_data, aes(x=Work, y=Academic_Performance)) +
+ggplot(surv_data, aes(x=Work, y=`Academic Performance`)) +
   geom_point() +geom_smooth() +
   labs(x="Weekly working hours", y="Uni Academic Performance")
+
+ggplot(surv_data, aes(x=`Physical Activity`, y=ATAR)) +
+  geom_point()
 ```
 
 
