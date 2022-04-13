@@ -32,11 +32,15 @@ AT{
 ```
 ## Executive Summary
 <y class="longer_line">
-- The purpose of this report is to look into the elements that influence students' grades. <br>
-- The major findings were that students who study for longer periods of time are more likely to have a better ATAR score as well as satisfactory university academic achievement. Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. Finally, it appeared that public high school students had the widest spread of ATAR scores and the lowest median score.
-
+The purpose of this report is to look into the elements that influence students' grades. <br>
+The major findings were that students who <br> 
+- study longer <br>
+- sleep 6~8 hours a day <br>
+- embed physical activities as a daily routine <br>
+are more likely to have a better ATAR score as well as satisfactory university academic achievement. <br>
+Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. <br>
+Finally, it appeared that public high school students had the widest range of ATAR scores and the lowest median score. <br>
  
-
 ## Initial Data Analysis (IDA)
 - __source:__ Acquired from survey responses using volunteer selection <br>
 - __sample:__ Consisting primarily of USYD students. <br>
@@ -45,10 +49,13 @@ AT{
 - __Data Wrangling__: For questions that required a quantitative response (such as number of hours or cups), any response containing a number and a word was cleaned to remove the word and record the number only. Data from respondents who gave consistently facetious responses was removed, as well as one response that did not provide their ATAR.
 
  
-```{r, message=FALSE}
+```{r, message=FALSE, include=FALSE}
 library(googlesheets4)
 library(ggplot2)
 library(datasets)
+require(dplyr)
+require(broom)
+library(psych)
 
 surv_url <- "https://docs.google.com/spreadsheets/d/1JGMBBDOkDFzFrTvwRGJ43rXYGYUKbJXn6SZjeau4NRA/edit?resourcekey#gid=946826064"
 surv_data <- read_sheet(surv_url)
@@ -107,7 +114,7 @@ Size of Data (# of reponses) = `r rows` <br>
 ||||||| `r Academ_Rat_mean` |
 
 </font>
-```{r}
+```{r, out.width="50%", fig.show="hold"}
 surv_data$Gender <- factor(surv_data$Gender,
     levels=c("Male", "Female", "Choose not to specify."))
 
@@ -118,29 +125,54 @@ surv_data$`High School` <- factor(surv_data$`High School`,
     levels=c("Public", "Private", "Selective"))
 
 str(surv_data)
+```
+```{r, fig.dim=c(10, 8)}
 pairs(surv_data[c(2:11)])
 ```
 
 
 ## Research Questions
 
-### Q, What is the effect of Study time on student's academic performance
-```{r, message=FALSE, fig.dim = diag_size}
-
-SR_AP <- surv_data$`Academic Performance`
-
+### Q, What impact does study time have on a student's academic performance?
+```{r, message=FALSE, fig.dim = diag_size, fig.show="hold", out.width="50%"}
+`self-rated\nacademic\nperformance` <- surv_data$`Academic Performance`
 ggplot(surv_data, aes(x=Study, y=ATAR)) +
-  geom_point(aes(color=SR_AP ), size=3) + geom_smooth() +
-  xlab("Average studying hours per week") + ylab("ATAR (High School)") +
-   scale_colour_gradient(low = "yellow", high = "red") +
-  labs(caption="SR_AP = Self-Rated Academic Performance")
+  geom_point(aes(color=`self-rated\nacademic\nperformance` ), size=3) + geom_smooth(method = "lm") +
+  labs(x="Average studying hours per week", y="ATAR (High School)", tag="Plot A") +
+   scale_colour_gradient(low = "yellow", high = "red")
+
+rs_data <- augment(lm(ATAR~ Study, data = surv_data))
+ggplot(rs_data , aes(x= 1:nrow(rs_data), y=.resid)) +
+  geom_point() +
+  geom_hline(yintercept=0, linetype="dashed", color="Blue") +
+  labs(x="Studying hours", y="ATAR", title="residual plot")
+
+cor_coef <- round(cor(x=surv_data$Study, y=surv_data$ATAR, method="pearson"), 5)
 ```
-```{r, message=FALSE, fig.dim = diag_size}
- ggplot(surv_data, aes(x=Study, y=`Academic Performance`)) +
-  geom_point(aes(color=ATAR), size=3) + geom_smooth() +
-  xlab("Average studying hours per week") + ylab("Self-rated Academic Performance (Uni)") +
+<font size="3">
+Pearson's Correlation Value : `r cor_coef`
+</font>
+```{r, message=FALSE, fig.dim = diag_size, fig.show="hold", out.width="50%"}
+ggplot(surv_data, aes(x=Study, y=`Academic Performance`)) +
+  geom_point(aes(color=ATAR), size=3) + geom_smooth(method="lm") +
+  labs(x="Average studying hours per week", y="Self-rated Academic Performance (Uni)", tag="Plot B") +
   scale_colour_gradient(low = "yellow", high = "green")
 
+rs_data <- augment(lm(`Academic Performance` ~ Study, data = surv_data))
+ggplot(rs_data , aes(x= 1:nrow(rs_data), y=.resid)) +
+  geom_point() +
+  geom_hline(yintercept=0, linetype="dashed", color="Blue") +
+  labs(x="Studying hours", y="Self-rated Academic Achievement (uni)", title="residual plot")
+
+cor_coef <- round(cor(x=surv_data$Study, y=surv_data$`Academic Performance`, method="pearson"), 5)
+```
+<font size="3">
+Pearson's Correlation Value : `r cor_coef`
+
+Plot A illustrates a positive relationship between average study time and ATAR, demonstrating that more study time equals a better ATAR. Plot B also depicts a strong positive relationship between average study time and perceived academic performance. As a result, both plots suggest that spending more time studying leads to higher academic achievemente.
+
+</font>
+```{r message=FALSE, fig.dim=diag_size}
 ac <- surv_data$`Academic Performance`
 divided_ac <- c()
 for (i in 1:length(ac)){
@@ -154,33 +186,39 @@ for (i in 1:length(ac)){
     divided_ac <- append(divided_ac, "8~10")
   }
 }
-names(surv_data$`Academic Performance`) <- divided_ac
-SR_AP <- names(surv_data$`Academic Performance`)
+`self-rated\nacademic\nperformance` <- divided_ac
 ggplot(surv_data, aes(x=ATAR)) +
-  geom_histogram(aes(fill=SR_AP), bins=5) +
-  labs(x="ATAR", y="# of Students", caption="SR_AP = Self-Rated Academic Performance")
-
+  geom_histogram(aes(fill=`self-rated\nacademic\nperformance`), bins=5) +
+  labs(x="ATAR", y="# of Students", tag="Graph C")
 ```
-<font size="3"> <br> 
-Can anyone describe the relationship of above two graphs using pearson's correlation value? or in a context of atar being standardised test and academic performance being self-rated. (on google doc) <br>
+<font size="3"> <br>
+According to the bar graph C, students with better ATAR scores tend to have a more generous and confident view of their own academic performance in university.
 </font>
 
-### Q. What is the effect of Environment on student's grade
+### Q. What impact does the environment have on a student's grade?
 ```{r, message=FALSE, fig.dim = diag_size}
 ggplot(surv_data, aes(x=`High School`, y=ATAR, color=Gender)) +
   geom_boxplot() +
-  xlab("Type of High School") + ylab("ATAR")
+  labs(x="Type of High School", y="ATAR", tag="Graph D")
+sel_med <- median(surv_data$ATAR[surv_data$`High School` == "Selective"])
+priv_med <- median(surv_data$ATAR[surv_data$`High School` == "Private"])
+pub_med <- median(surv_data$ATAR[surv_data$`High School` == "Public"])
 ```
+<font size="3"> Private school students had the highest median ATAR of `r priv_med`, followed by selective school students with `r sel_med`, and then public school students with `r pub_med` In comparison to public schools, both selective and private schools have a much higher median. This could indicate that students in public schools are subjected to lower educational standards.
+</font>
 ```{r, message=FALSE, fig.dim = diag_size}
 ggplot(surv_data, aes(x=Tutoring, y=ATAR)) +
-  geom_point() + geom_smooth() +
-  xlab("Tutoring") + ylab("ATAR") 
+  geom_point() + geom_smooth(method="lm") +
+  labs(x="Tutoring received per week (hr.) ", y="ATAR", tag="Plot E") 
+cor_coef <- round(cor(x=surv_data$Tutoring, y=surv_data$`ATAR`, method="pearson"), 5)
 ```
-<br>
+<font size="3">
+Plot E shows that, while intensive tutoring may have a marginally positive impact on a student's grade, the majority of students received sufficient ATAR scores with no or only a few hours of tutoring. With a pearson's correlation value of only `r cor_coef`, the linear link is too weak.
+</font>
 
-### Q. What is the effect of Daily lifetyle on student's grade
+### Q. What effect does daily routine have on a student's grade?
 
-```{r, message=FALSE, fig.dim = diag_size}
+```{r, message=FALSE, fig.dim = diag_size, fig.show="hold", out.width="50%"}
 c <- surv_data$`Caffeine Consumption`
 drink_or_not <- c()
 for (i in 1:length(c)){
@@ -195,7 +233,7 @@ names(surv_data$`Caffeine Consumption`) <- drink_or_not
 
 ggplot(surv_data, aes(x=names(`Caffeine Consumption`), y=ATAR)) +
   geom_boxplot(aes(color=Sleep)) +
-  labs(x="Caffeine Consumption (y/n) ", y="ATAR score")
+  labs(x="Caffeine Consumption (y/n) ", y="ATAR score", tag="Graph F")
 
 divided_caffeine <- c()
 for (i in 1:length(c)){
@@ -213,16 +251,37 @@ names(surv_data$`Caffeine Consumption`) <- divided_caffeine
 
 ggplot(surv_data, aes(x=names(`Caffeine Consumption`), fill=Sleep)) + 
   geom_bar() +
-  labs(x="caffeine consumption per week ", y="# of people (responses)")
-
-ggplot(surv_data, aes(x=Work, y=`Academic Performance`)) +
-  geom_point() +geom_smooth() +
-  labs(x="Weekly working hours", y="Uni Academic Performance")
-
-ggplot(surv_data, aes(x=`Physical Activity`, y=ATAR)) +
-  geom_point()
+  labs(x="caffeine consumption per week ", y="# of people (responses)", tag="Graph G")
 ```
+<font size="3"> <br>
+Graph F shows that the median ATAR of students who had around 6-8 hours of sleep was shown to be higher. This analysis, however, has limits because the majority of survey respondents said they sleep for an average of 6 to 8 hours.
 
+Both graphs F and G imply that increasing caffeine consumption could raise the likelihood of sleep deprivation, assuming that getting just 4 to 6 hours of sleep per day is bad for health.
+</font>
+
+```{r, message=FALSE, fig.dim = diag_size, fig.show="hold", out.width="50%"}
+ggplot(surv_data, aes(x=Work, y=`Academic Performance`)) +
+  geom_point() + geom_smooth(method="lm") +
+  labs(x="Weekly working hours", y="Uni Academic Performance", tag="Plot H")
+
+`self-rated\nacademic\nperformance` <- surv_data$`Academic Performance`
+ggplot(surv_data, aes(x=Work, y=Study)) +
+  geom_point(aes(color=`self-rated\nacademic\nperformance`)) + geom_smooth(method="lm") +
+  scale_colour_gradient(low = "yellow", high = "red") +
+  labs(x="Weekly working hours", y="Weekly studying hours", tag="Plot I")
+```
+<font size="3"> <br>
+Plot H appears to imply that the more work a student undertakes, the more difficult it is to get better academic results. The most obvious reason for this, we feel, stems from our discovery during the IDA that working hours are inversely proportionate to studying hours. (Plot I)
+
+</font> <br>
+<font size="4">
+*More limitations (biases) that need to be considered for Further Analysis:* <br>
+</font>
+<font size="3">
+
+- **Social Desirability bias**: Respondents answer questions untruthfully in order to avoid >eing judged negatively. 
+- **Selection bias**: Respondents are chosen from a pool of people who are enrolled in tertiary education and have ATAR scores of range [`r min(surv_data$ATAR)`, `r max(surv_data$ATAR)`]. As a result, the study may have low external validity because the sample is not a representative sample of the wider population.
+</font>
 
 
 ## Articles
@@ -235,4 +294,25 @@ Use APA
 <br>
 
 ## Acknowledgments
-When did you team meet (date and time), and what did each team member contribute?
+### Group meetings
+<font size="3">
+From week 3 through week 7, we held group sessions at Carslaw Learning Hub on Thursdays from 6 to 7 p.m. (after our in-person tutorial).
+</font>
+
+### Group Roles: (contribution)
+<font size="3">
+
+- **Isaac(510603294):** Compilation of the R Markdown Project Report, including data wrangling, IDA & producing most numerical summaries and data visualizations. Analysis on Graph C, F, G, H, I
+
+- **Jiayu(SID):** Analysis of data visualizations: Graph D, E, Produced linear modeling and residual plots. Background Research on Correlation between caffeine consumption and academic achievement.
+
+- **Rachiwon(SID):** Articles and References, Background Research on ....
+
+- **Andrea(SID):** Analysis of Graph A and B. Responsible for creating video script and editing.
+
+- **Sacha(SID):** Topic Selection, Meeting Facilitator, Carried out most IDA. Wrote Acknowledgement section
+
+- **Everyone:** Design survey questions. Discussions on the limitations of our research.
+
+</font>
+
