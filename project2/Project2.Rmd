@@ -1,6 +1,6 @@
 ---
 title: "Project 2"
-author: "<AT>510603294,  520438936,  510513719,  520450156,  rachi </AT>"
+author: "<AT>510603294,  520438936,  510513719,  520450156,  520512915 </AT>"
 date: "University of Sydney | `r Sys.Date()`"
 output:
   html_document:
@@ -33,13 +33,9 @@ AT{
 ## Executive Summary
 <y class="longer_line">
 The purpose of this report is to look into the elements that influence students' grades. <br>
-The major findings were that students who <br> 
-- study longer <br>
-- sleep 6~8 hours a day <br>
-- embed physical activities as a daily routine <br>
-are more likely to have a better ATAR score as well as satisfactory university academic achievement. <br>
-Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. <br>
-Finally, it appeared that public high school students had the widest range of ATAR scores and the lowest median score. <br>
+- The major findings were that students who *study longer* and *sleep 6~8 hours a day* are more likely to have a better ATAR score as well as satisfactory university academic achievement. <br>
+- Furthermore, it appears that a student's typical working hours and caffeine consumption are inversely proportional to their school performance. <br>
+- Finally, it appeared that public high school students had the widest range of ATAR scores and the lowest median score. <br>
  
 ## Initial Data Analysis (IDA)
 - __source:__ Acquired from survey responses using volunteer selection <br>
@@ -274,6 +270,26 @@ ggplot(surv_data, aes(x=Work, y=Study)) +
 Plot H appears to imply that the more work a student undertakes, the more difficult it is to get better academic results. The most obvious reason for this, we feel, stems from our discovery during the IDA that working hours are inversely proportionate to studying hours. (Plot I)
 
 </font> <br>
+
+```{r, message=FALSE, fig.dim = diag_size, fig.show="hold", out.width="50%"}
+ggplot(surv_data, aes(x=`Physical Activity`, y=`Academic Performance`)) +
+  geom_point() + geom_smooth(method="lm") +
+  labs(x="Physical Activity Engagement (hr/wk)", y="Uni Academic Performance", tag="Plot J")
+
+rs_data <- augment(lm(`Academic Performance` ~ `Physical Activity`, data = surv_data))
+ggplot(rs_data , aes(x= 1:nrow(rs_data), y=.resid)) +
+  geom_point() +
+  geom_hline(yintercept=0, linetype="dashed", color="Blue") +
+  labs(x="Physical Activity Engagement", y="Self-rated Academic Achievement (uni)", title="residual plot")
+
+cor_coef <- round(cor(x=surv_data$`Physical Activity`, y=surv_data$`Academic Performance`, method="pearson"), 5)
+```
+<font size="3">
+Pearson's Correlation Value : `r cor_coef`
+
+Plot J illustrates no clear relationship between average hours engaged in physical activity per week and Academic Performance of a student.
+</font>
+
 <font size="4">
 *More limitations (biases) that need to be considered for Further Analysis:* <br>
 </font>
@@ -302,15 +318,15 @@ From week 3 through week 7, we held group sessions at Carslaw Learning Hub on Th
 ### Group Roles: (contribution)
 <font size="3">
 
-- **Isaac(510603294):** Compilation of the R Markdown Project Report, including data wrangling, IDA & producing most numerical summaries and data visualizations. Analysis on Graph C, F, G, H, I
+- **Isaac(510603294):** Compilation of the R Markdown Project Report, including data wrangling, IDA & producing most numerical summaries and data visualizations. Analysis on Graph F, G, H, I. Presentation(video)
 
-- **Jiayu(SID):** Analysis of data visualizations: Graph D, E, Produced linear modeling and residual plots. Background Research on Correlation between caffeine consumption and academic achievement.
+- **Jiayu(520438936):** Analysis of data visualizations: Graph C, E, Produced linear modeling and residual plots. Background Research on Correlation between caffeine consumption and academic achievement. Presentation(video)
 
-- **Rachiwon(SID):** Articles and References, Background Research on ....
+- **Rachiwon(520512915):** Researched about potential biases in our research. Analysis of Graph D.
 
-- **Andrea(SID):** Analysis of Graph A and B. Responsible for creating video script and editing.
+- **Andrea(520450156):** Analysis of Graph A and B. Responsible for creating video script and editing. Presentation(video)
 
-- **Sacha(SID):** Topic Selection, Meeting Facilitator, Carried out most IDA. Wrote Acknowledgement section
+- **Sacha(510513719):** Topic Selection, Meeting Facilitator, Carried out most IDA. Wrote Acknowledgement section. Presentation(video)
 
 - **Everyone:** Design survey questions. Discussions on the limitations of our research.
 
