@@ -165,7 +165,7 @@ cor_coef <- round(cor(x=surv_data$Study, y=surv_data$`Academic Performance`, met
 <font size="3">
 Pearson's Correlation Value : `r cor_coef`
 
-Plot A illustrates a positive relationship between average study time and ATAR, demonstrating that more study time equals a better ATAR. Plot B also depicts a strong positive relationship between average study time and perceived academic performance. As a result, both plots suggest that spending more time studying leads to higher academic achievemente.
+Plot A illustrates a positive relationship between average study time and ATAR, demonstrating that more study time equals a better ATAR. Plot B also depicts a strong positive relationship between average study time and perceived academic performance. As a result, both plots suggest that spending more time studying leads to higher academic achievement.
 
 </font>
 ```{r message=FALSE, fig.dim=diag_size}
@@ -297,16 +297,29 @@ Plot J illustrates no clear relationship between average hours engaged in physic
 
 - **Social Desirability bias**: Respondents answer questions untruthfully in order to avoid >eing judged negatively. 
 - **Selection bias**: Respondents are chosen from a pool of people who are enrolled in tertiary education and have ATAR scores of range [`r min(surv_data$ATAR)`, `r max(surv_data$ATAR)`]. As a result, the study may have low external validity because the sample is not a representative sample of the wider population.
+- **Question order bias:** Data may be affected by “priming” due to participants answering specific questions such that general questions are internally consistent
+
 </font>
 
 
 ## Articles
+<font sine="3">
+Article A claims that sleep problems could negatively influence students’ academic performance, and that coffee intake is one of the most deciding factors for quality sleep. (Forquer and colleagues, 2008)
 
-<br>
+Article B combines data to look at the differences in academic accomplishment between public and private schools. The findings confirm that private and selective school students have higher median ATARs. (2007, Dronkers & Robert)
+</font>
 
 ## References
-Use APA
+<font size="3">
+**Article A** <br>
+Forquer, L., Camden, A., Gabriau, K., & Johnson, C. (2008). Sleep Patterns of College Students at a Public University. Journal Of American College Health, 56(5), 563-565. https://doi.org/10.3200/jach.56.5.563-565
 
+**Article B** <br>
+Dronkers, J., & Robert, P. (2007). Differences in Scholastic Achievement of Public, Private Government-Dependent, and Private Independent Schools. Educational Policy, 22(4), 541-577. https://doi.org/10.1177/0895904807307065
+
+**Github Page** <br>
+https://github.com/yonghyeon0223/DATA1001.git
+</font>
 <br>
 
 ## Acknowledgments
