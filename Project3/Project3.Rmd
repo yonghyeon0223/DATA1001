@@ -1,0 +1,54 @@
+---
+title: "Cleaner Toilets For Better Public Health"
+author: "501603294"
+subtitle: "Project 3"
+date: "University of Sydney | DATA1001 | `r Sys.Date()` "
+output:
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    self_contained: yes
+    theme: flatly
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: hide
+---
+
+```{css newstyles, echo=FALSE}
+h3{
+margin-top : 16px;
+}
+h1, h2 { /* add border to h1 and h2 */
+  border-bottom: solid 1px #666;
+  margin-top : 36px;
+}
+body { /* Make main text colour black */
+  color: black;
+  background-image : url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHDZgYoK3cPiRK899G9OTSrUgFYeadxJPjXg&usqp=CAU");
+  background-repeat : no-repeat;
+  background-size: cover;
+}
+a { /* Link colours */
+  color: blue;
+}
+
+```
+
+
+# Recommendation
+
+# Evidence
+
+```{r, message=F}
+
+library(tidyverse)
+
+data = read.csv("broadband.csv")
+list.files()
+str(data)
+summary(data)
+# pairs(data)
+```
+
+#  Acknowledgments
