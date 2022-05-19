@@ -1,5 +1,5 @@
 ---
-title: "Cleaner Toilets For Better Public Health"
+title: "Effective drunk driving preventions"
 author: "501603294"
 subtitle: "Project 3"
 date: "University of Sydney | DATA1001 | `r Sys.Date()` "
@@ -16,18 +16,14 @@ output:
 ---
 
 ```{css newstyles, echo=FALSE}
-h3{
-margin-top : 16px;
-}
 h1, h2 { /* add border to h1 and h2 */
   border-bottom: solid 1px #666;
   margin-top : 36px;
 }
 body { /* Make main text colour black */
   color: black;
-  background-image : url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHDZgYoK3cPiRK899G9OTSrUgFYeadxJPjXg&usqp=CAU");
-  background-repeat : no-repeat;
-  background-size: cover;
+  background-color : #deeff5;
+  font-size : 16px;
 }
 a { /* Link colours */
   color: blue;
@@ -37,18 +33,118 @@ a { /* Link colours */
 
 
 # Recommendation
+The goal of this report is to give police/government authorities advice so that they can have a better understanding of the results of random breathing tests.
+
+- Increasing the frequency of conducting RBT will help reduce the rate of drunk driving.
+
+- The likelihood of receiving positive RBT results appears to be linked to the number of fatal crashes caused by drunk driving. Police should concentrate on identifying factors that could lower the rate of RBT positive results.
 
 # Evidence
 
 ```{r, message=F}
 
-library(tidyverse)
+# Load in necessary data and library.
 
-data = read.csv("broadband.csv")
-list.files()
-str(data)
-summary(data)
-# pairs(data)
+library(tidyverse)
+library(plotly)
+data = read.csv("RBT.csv")
+
+# Rename columns
+data = data %>% rename(
+  TestNum = RBT.conducted,
+  Positive = Positive.RBT,
+  
+  DriverDeath = Number.of.drivers.and.motorcycle.riders.killed.with.a.blood.alcohol.concentration..BAC..above.the.legal.limit,
+  
+  TotalDeath = Number.of.deaths.from.crashes.involving.a.driver.or.motorcycle.rider.with.a.blood.alcohol.concentration..BAC..above.the.legal.limit
+)
+
+# Data Wrangling
+data$State = factor(data$State, levels = c("NSW", "Vic", "Qld", "WA", "SA", "Tas", "NT ",  "ACT" ))
+data$TestNum = as.numeric(gsub(",", "", data$TestNum))
+data$Positive = as.numeric(gsub(",", "", data$Positive))
+data$Licences = as.numeric(gsub(",", "", data$Licences))
 ```
+
+### Assumptions
+- Random Breathing Tests were conducted to randomly selected Australian drivers on the road. Hence, the sample data provided by the RBT.csv file closely represents the population of Australian drivers. 
+- RBT results are accurate with a negligible margin of error.
+
+### Limitations
+-  Regional, Demographic characteristics are not accounted for when analysing data.
+- As the data set is grouped by year and state, correlation between individual variables may not be accurate
+- Selection of Australian drivers to conduct RBT done by Police may not be truly random due to many confounding variables, such as time and place where the test is conducted. 
+
+
+### Advice 1: Conduct more Random Breathing Tests
+
+```{r, message=F, warning=F}
+p = plot_ly(data,
+        x = ~(TestNum / Licences),
+        y = ~(Positive / TestNum),
+        size = ~Licences,
+        color = ~State,
+        type = "scatter",
+        hoverinfo = "text",
+        hovertext = paste0("Year: ", data$Year,
+                           "<br>State: ", data$State,
+                           "<br># of conducted RBTs: ", data$TestNum,
+                           "<br># of Positive results: ", data$Positive,
+                           "<br>$ of licences issued: ", data$Licences
+                           )
+  
+        )
+layout(p,
+       title = "Relative frequency of RBT tests vs Rate of Positive results",
+       xaxis = list(title = "Number of RBTs a driver would receive in a given year & state <br> (# of tests / # of licences)"),
+       yaxis = list(title = "Rate of Positive result<br>(# of positive cases / # of tests)", type="log", tickvals=c(0.005, 0.01, 0.02, 0.04, 0.08))
+)
+
+```
+
+To allow comparison of states with differing numbers of drivers, the number of conducted RBTs relative to the number of state's licenced drivers in a given year is used instead of the absolute number.
+
+Drivers from eight Australian states, with the exception of Tasmania, are less likely to test positive in RBT when the state performs more RBTS in a given year, as seen in the graph above. This, in my opinion, has something to do with the mental state of the drivers. Drivers will be less inclined to drive while intoxicated if they perceive they are more likely to get caught on any given day.
+
+In 2020, the reported rate of testing positive on RBT was highest in NSW, VIC, and Qld, the three states with the most licenced drivers, but the relative frequency of testing was lowest. This is not a coincidental occurrence. I highly encourage state governments and police to conduct more RBTs in order to reduce drunk driving.
+
+### Advice 2: Try to cut down the rate of positive RBT results to reduce casualties.
+
+```{r, message=F, warning=F}
+
+p = plot_ly(data,
+        x = ~(Positive / TestNum),
+        y = ~(TotalDeath / Licences) * 100,
+        color = ~State,
+        size = ~TotalDeath,
+        type = "scatter",
+        hoverinfo = "text",
+        hovertext = paste0("Driver Death: ", data$DriverDeath,
+                           "<br>Total Death: ", data$TotalDeath,
+                           "<br>Rate of Positive results: ", round((data$Positive / data$TestNum)*100, 3), "%",
+                           "<br>Death Rate: ", round((data$TotalDeath / data$Licences)*100, 6), "%"
+        )
+
+)  
+      
+        
+layout(p,
+       title = "Rate of Positive RBT results vs Death Rates",
+       xaxis = list(title = "Rate of Positive result<br>(# of positive cases / # of tests)", type="log", tickvals=c(0.005, 0.01, 0.02, 0.04, 0.08)),
+       yaxis = list(title = "Death Rate (in %) <br>(# of Death due to Drunk Driving / # of licences)", type="log", tickvals=c(0.0005, 0.001, 0.005, 0.01))
+        
+        )
+
+
+```
+The above graph ignores observations from the states of Victoria and South Australia because data related to mortality isn't available for these states.
+
+The likelihood of a driver getting involved in a drunk driving accident and dying during a year period is shown by the "death rate" on the graph above. It is computed by dividing the total number of people killed in drunk driving accidents by the number of licences issued in that year and state.
+
+According to the above plot, a higher rate of testing positive on RBT is directly associated to mortality when a crash occurs as a result of drunk driving. As a result, authorities should concentrate on identifying and removing elements that increase the likelihood of drivers testing positive on RBT. Reduced RBT tests, as mentioned by Advice 1, could be one such issue.
+
+
+In Tasmania, where the incidence of positive tests is significantly greater than in other regions, crash fatalities appear to be much higher as well. The Tasmanian government should study the graphs in this  report and consider the recommendations.
+
 
 #  Acknowledgments
