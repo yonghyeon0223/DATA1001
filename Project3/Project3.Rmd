@@ -1,6 +1,6 @@
 ---
 title: "Effective drunk driving preventions"
-author: "501603294"
+author: "510603294"
 subtitle: "Project 3"
 date: "University of Sydney | DATA1001 | `r Sys.Date()` "
 output:
@@ -67,13 +67,14 @@ data$Licences = as.numeric(gsub(",", "", data$Licences))
 ```
 
 ### Assumptions
-- Random Breathing Tests were conducted to randomly selected Australian drivers on the road. Hence, the sample data provided by the RBT.csv file closely represents the population of Australian drivers. 
+- Random Breathing Tests were conducted to Australian drivers selected by simple random sampling. Hence, the sample data provided by the RBT.csv file closely represents the population of Australian drivers. 
 - RBT results are accurate with a negligible margin of error.
 
 ### Limitations
 -  Regional, Demographic characteristics are not accounted for when analysing data.
 - As the data set is grouped by year and state, correlation between individual variables may not be accurate
 - Selection of Australian drivers to conduct RBT done by Police may not be truly random due to many confounding variables, such as time and place where the test is conducted. 
+- Some of the information in data set are missing/unavailable. (eg. data from earlier years do not contain number of issued licences).
 
 
 ### Advice 1: Conduct more Random Breathing Tests
@@ -148,3 +149,9 @@ In Tasmania, where the incidence of positive tests is significantly greater than
 
 
 #  Acknowledgments
+University of Sydney, (2021), APA Introduction to Plotly: Interactive Visualisations (6th edition). (See https://canvas.sydney.edu.au/courses/38889/pages/3-dot-4-explore?module_item_id=1400665)
+
+**Github Page**: https://github.com/yonghyeon0223/DATA1001/tree/main/Project3
+
+
+
