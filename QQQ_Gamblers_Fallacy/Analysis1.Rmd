@@ -1,0 +1,100 @@
+---
+title: "QQQ 확률적 분석"
+author: "김용현"
+output:
+  html_document:
+    fig_caption: yes
+    number_sections: yes
+    self_contained: yes
+    theme: flatly
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: hide
+---
+
+```{css newstyles, echo=FALSE}
+h1, h2 { /* add border to h1 and h2 */
+  border-bottom: solid 1px #666;
+  margin-top : 36px;
+}
+body { /* Make main text colour black */
+  color: black;
+  background-color : #deeff5;
+  font-size : 16px;
+}
+a { /* Link colours */
+  color: blue;
+}
+```
+
+
+### 주의
+안녕하세요. 저는 시드니 대학교에서 컴퓨터 공학을 공부하고 있는 1학년 김용현이라고 합니다. 본 리포트는 전문성은 없지만 저와 같이 주식에 입문하지 얼마 안 된 주린이라면 궁금할 만한 의문들을 학교에서 배운 기본적인 통계 지식과 R을 이용해 분석한 내용을 담고 있습니다. 이 리포트의 내용은 하나부터 열까지 저의 주관적인 논리가 바탕이 되므로 흥미 위주로만 읽어주시면 감사하겠습니다 :)
+
+### 자료 출처 및 내용
+출처: yahoo finance <br>
+소개: 1999년 3월 15일 부터 2022 5월 27일까지의 QQQ 데이터 <br>
+내용: 일별로 QQQ의 시작가, 고점, 저점, 종가, 그리고 거래량이 기재되어 있음 <br>
+
+```{r, message=F, warning=F}
+library(plotly)
+library(tidyverse)
+qqq = read.csv("qqq_history.csv")
+str(qqq)
+
+# Number Dates
+data_size = dim(qqq)[1]
+qqq <- qqq %>% mutate(DateNum = 1:data_size)
+
+# Add Year
+date_split = str_split(qqq$Date, "-")
+year_ls = c()
+for (date in date_split){
+  year = as.integer(str_split(date, "-")[1])
+  year_ls = c(year_ls, year)
+}
+qqq <- qqq %>% mutate(Year = year_ls)
+```
+
+
+### QQQ의 가격 변화 (년도별 평균 종가)
+```{r, message=F, warning=F}
+PriceByYear = qqq %>% group_by(Year) %>% summarise(price = mean(Close))
+# PriceByYear
+VolumeByYear = qqq %>% group_by(Year) %>% summarise(volume = mean(Volume))
+# VolumeByYear
+plot_ly(PriceByYear,
+        x = ~Year,
+        y = ~price,
+        size = ~VolumeByYear$volume * price *2,
+        type = "scatter",
+        hoverinfo = "text",
+        hovertext = paste0("년도: ", PriceByYear$Year,
+                           "<br>평균 가격: ", PriceByYear$price,
+                           "<br>평귱 거래량($): ", round(VolumeByYear$volume * PriceByYear$price / 1000000), "M")
+        )
+
+
+```
+
+
+### 시뮬레이션 1 (도박사의 오류 - Gambler's Fallacy)
+
+- 시작 금액: $10,000
+- 추가 입금
+- 종가를 기준으로, 전날 가격이 올랐으면 sqqq에 전액 배팅
+- 종가를 기준으로, 전날 가격이 내렸으면 tqqq에 전액 배팅
+
+```{r, message=F, warning=F}
+for (i in 1:data_size){
+  today = qqq[i,]
+  print(today)
+}
+
+qqq[1,]
+
+
+```
+
+
