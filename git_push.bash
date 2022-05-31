@@ -1,4 +1,4 @@
-git add ./project2
+git add ./FinalExam
 git status
 echo "Provide commit message"
 read commitMsg
